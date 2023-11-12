@@ -22,7 +22,7 @@ export const addProduct = async(req, res) => {
 export const getProducts = async(req, res) => {
     let result = await productService.getProducts()
     if(!result) return res.status(500).send({status: "error", error: "Error al consultar producto"})
-     res.send({status: "success", result: "getProducts"})
+     res.send({status: "success", result: "result"})
 }
 
 export const getProductsById = async(req, res) => {

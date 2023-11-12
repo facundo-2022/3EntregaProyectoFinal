@@ -2,7 +2,17 @@ import userModel from '../models/user.model.js'
 
 export default class User {
 
+    createUser = async(user) =>{
+        try {
+            let result = await userModel.create(user)
+            return result
+        } catch (error) {
+            console.log(error)
+            return null
+        }
+    }
     
+   
     getUser = async() =>{
         try {
             let users = await userModel.find()

@@ -1,6 +1,6 @@
 import express from "express";
 import {Router} from 'express'
-import { getUser, getUserById, saveUser } from "../Controllers/usuariosControllers.js";
+import { getUser, getUserById, saveUser, createUser, } from "../Controllers/usuariosControllers.js";
 
 const router = Router()
 
@@ -12,7 +12,7 @@ const jwt = require("jsonwebtoken");
  */
 
 //desde aca llamos a mis endpoint desde controllers
-
+router.post("/", createUser)
 router.get("/", getUser)
 router.get("/", getUserById)
 router.put('/', saveUser)
