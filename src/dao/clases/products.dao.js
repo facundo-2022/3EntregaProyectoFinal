@@ -40,7 +40,7 @@ export default class Product {
 
     saveProduct = async(user) => {
         try {
-            let result = await productModel.create(product)
+            let result = await productModel.create()
             return result
             console.log('El usuario creo correctamente')
         } catch (error) {

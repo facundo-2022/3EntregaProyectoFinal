@@ -12,8 +12,8 @@ const jwt = require("jsonwebtoken");
  */
 
 //desde aca llamos a mis endpoint desde controllers
-router.post("/", createUser)
-router.get("/", getUser)
+router.post("/register", createUser)
+router.get("/login", getUser)
 router.get("/", getUserById)
 router.put('/', saveUser)
 
