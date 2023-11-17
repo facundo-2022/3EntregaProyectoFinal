@@ -2,69 +2,58 @@ import ticketModel from "../models/ticket.model.js";
 
 export default class ticket{
   
-getAllTickets = async () => {
+  async getAllTickets(req, res) {
     try {
-      const tickets = await Ticket.find();
-      return tickets;
+      const tickets = await ticket.getAllTickets();
+      res.json(tickets);
     } catch (error) {
-      console.log(error)
-      return null
+      res.status(500).json({ error: error.message });
     }
   }
 
- getTicketById = async(ticketId) => {
+  async getTicketById(req, res) {
+    const { ticketId } = req.params;
     try {
-      const ticket = await Ticket.findById(ticketId);
-        return ticket;
+      const ticket = await ticket.getTicketById(ticketId);
+      if (ticket) {
+        res.json(ticket);
+      } else {
+        res.status(404).json({ message: 'Ticket no existe' });
+      }
     } catch (error) {
-      console.log(error)
-      return null
-    }
-  }
- createTicket = async(ticketData)=> {
-    try {   
-        const newTicket = await Ticket.create(ticketData);
-        return newTicket;
-    } catch (error) {
-        console.log(error)
-        return null
+      res.status(500).json({ error: error.message });
     }
   }
 
-   updateTicket = async(ticketId, updatedTicketData) =>{
+  async createTicket(req, res) {
+    
+    const { title, description } = req.body;
+    
     try {
-      const updatedTicket = await Ticket.findByIdAndUpdate(
-        ticketId,
-        updatedTicketData,
-        { 
-        ticketId,
-        updatedTicketData,
-  
-
-        ticketId,
-        updat
-
-        ticketId
-new: true } // Devuelve el documento actualizado
-      );
-    return updatedTicket;
+      const newTicket = await ticket.createTicket({ title,code, purchase_datetime, amount, purchaser });
+      res.status(201).json(newTicket);
     } catch (error) {
-        console.log(error)
-        return null
+      res.status(500).json({ error: error.message });
     }
   }
 
-  
- 
-deleteTicket = async(ticketId) => {
-    try  {  
-    const deletedTicket = await Ticket.findByIdAndDelete(ticketId);
-      return deletedTicket;
+
+  async deleteTicket(req, res) {
+    const { ticketId } = req.params;
+
+    try {
+      const deletedTicket = await ticket.deleteTicket(ticketId);
+      if (deletedTicket) {
+        res.json({ message: 'Ticket eliminado correctamente' });
+      } else {
+        res.status(404).json({ message: 'Ticket no existe' });
+      }
     } catch (error) {
-        console.log(error)
-        return null
+      res.status(500).json({ error: error.message });
+    }
   }
 }
 
 
-}
+
+

@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 const ticketCollection = "ticket";
 
 const ticketSchema = new Schema({
+  title: String,
+  
   code: {
     type: String,
     required: true,
