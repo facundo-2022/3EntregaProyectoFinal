@@ -22,5 +22,12 @@ export const saveUser = async(req, res) =>{
 export const createUser = async(req, res) =>{
     const user = req.body
     let result = await usuarioService.createUser(user)
-    res.send({status:"success", result: result})
+    res.send({status:"success", result: result}) 
+    
+}
+export const userForm = (req, res)=>{
+    res.render('register')}
+
+export const userSession = (req, res) =>{
+    res.render('login')
 }

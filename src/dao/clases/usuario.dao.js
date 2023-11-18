@@ -26,7 +26,7 @@ export default class User {
     }
 
     //consultamos el usaurio por su id
-    getUserById = async() =>{
+     getUserById = async() =>{
         try {
             let user = await userModel.findOne({_id: id})
             return user
@@ -35,7 +35,7 @@ export default class User {
             return res.status(404).send({status:"error", error:'El id no coincide con el usuario'})
         }
     }
-
+ 
 
     //creamos el usuario en user y usamos los parametros desde userModel 
     saveUser = async(user) => {

@@ -5,12 +5,13 @@ const mongoosePaginate = require("mongoose-paginate-v2"); */
 const productCollection = "products";
 
 const productSchema = mongoose.Schema({
-  name: String,
+  title: String,
+  description: String,
   category: String,
   price: Number,
   stock: Number,
   image: String,
-  id: String
+ id: String
 });
 
 /* productSchema.plugin(mongoosePaginate); */

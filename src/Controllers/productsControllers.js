@@ -5,17 +5,16 @@ const productService = new Product()
 
 export const createProducts = async(req, res) => {
     const product = req.body
-    let result = await productService.saveProduct(product)
-    if(!result) return res.status(500).send({status: "error", error: "Error al crear un producto"})
+    let result = await productService.createProduct(product)
+   
     res.send({status: "success", result: result})
 }
 
 export const addProduct = async(req, res) => {
     let product = req.body
     let result = await productService.getProductsById(req.params.bid)
-    products.push(result)
+    product.push(result)
     await productService.updateProduct(result._id, result)
-
     res.send({status: "success", result: "Producto actualizado"})
 }
 
@@ -39,6 +38,8 @@ export const deleteProducts = async (req, res) =>{
     res.send({status: "success", result: "deleteProducts"})
 }
 
-
+export const productForm = (req, res) =>{
+    res.render('product')
+}
 
 

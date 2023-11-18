@@ -23,6 +23,7 @@ export default class Product {
         try {
             let result = await productModel.create(product)
             return result
+            if(!result) return res.status(500).send({status: "error", error: "Error al crear un producto"})
         } catch (error) {
             console.log(error)
             return null
@@ -38,7 +39,7 @@ export default class Product {
         }
     }
 
-    saveProduct = async(user) => {
+   /*  saveProduct = async(user) => {
         try {
             let result = await productModel.create()
             return result
@@ -48,7 +49,7 @@ export default class Product {
             return res.status(404).send({status:"error", error:'Error al guardar usuario'})
             
         }
-    }
+    } */
 
     deleteProduct = async (id, product) =>{
         try{

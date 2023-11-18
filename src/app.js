@@ -3,9 +3,11 @@ import mongoose from 'mongoose'
 import usuarioRouter from './routes/usuarios.router.js'
 import productRouter from './routes/products.router.js'
 import cartRouter from './routes/carts.router.js'
-
-/* import nodemailer from 'nodemailer'
-import bodyParser from 'body-parser'; */
+import handlebars from 'express-handlebars';
+//import nodemailer from 'nodemailer';
+import bodyParser from 'body-parser'; 
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 
 /* const express = require("express");
 const mongoose = require("mongoose");
@@ -21,6 +23,20 @@ const cookieParser = require("cookie-parser"); */
 const PRIVATE_KEY = "CoderKey"
 const app = express();
 const port = 8080;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+app.use(bodyParser.urlencoded({extends:true}))
+app.use(bodyParser.json())
+
+
+app.engine("handlebars", handlebars.engine());
+
+//app.set("views", __dirname + "/views");
+app.set("view engine", "handlebars");
+
+
 /* 
 app.use(bodyParser.urlencoded({extends:true}))
 app.use(bodyParser.json())
@@ -40,9 +56,7 @@ app.use(bodyParser.json());
 
 
 
-app.engine("handlebars", handlebars.engine());
-app.set("views", __dirname + "/views");
-app.set("view engine", "handlebars");
+
  */
 
 /* 
