@@ -25,9 +25,9 @@ const initializePassport = () => {
 //aca configuro la autenticación para GitHub para que con mi usuario de github pueda ingresar.
 const configureLocalStrategy = () => {
 // Configuración de la estrategia local de registro
-    passport.use('register', new localStrategy(
+    passport.use('./register', new localStrategy(
         { passReqToCallback: true, usernameField: 'email'}, async (req, username, password, done) => {
-            const { first_name, last_name, email, age } = req.body;
+            const { first_name, last_name, email, age} = req.body;
             try {
                 let user = await usuarioService.getUserByEmail(username);
                 if (user) {

@@ -1,6 +1,6 @@
 import express from "express";
 import {Router} from 'express'
-import { getUser, getUserById, createUser, updateUser, deleteUser, userForm, userSession} from "../Controllers/usuariosControllers.js";
+import { getUser, getUserById, updateUser,createUser, deleteUser, userForm, userSession} from "../Controllers/usuariosControllers.js";
 
 const router = Router()
 
@@ -11,9 +11,9 @@ router.get("/register", userForm)
 router.get("/login", userSession)
 router.get("/", getUser)
 router.get("/uid:", getUserById)
-router.put('/', saveUser)
 router.post('/register', createUser)
 router.post('/login', userSession)
+router.delete('/:uid', deleteUser)
 
 
 

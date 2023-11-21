@@ -2,7 +2,8 @@ import User from '../dao/clases/usuario.dao.js'
 import Cart from '../dao/clases/carts.dao.js'
 import { createHash, isValidatePassword } from '../utils/utils.js'
 import passport from 'passport'
-import config from '../config/passport.config.js'
+import config from '../config/config.js'
+
 
 
 
@@ -44,11 +45,36 @@ export const getUserById = async(req, res) =>{
  
 
 export const updateUser = async(req, res) =>{
-   
-    const user = req.body
-    let result = await usuarioService.updateUser(user)
-    res.send({status:"success", result: result})
-}
+    
+        const update = req.body;
+            if (!update || Object.keys(update).length === 0) {
+            return res.status(400).send({ status: "error", error: "Faltan datos, por favor completar para actualizar" });
+        }
+        try {
+            const user = await usuarioService.getUserByEmail(update.email);
+            if (!user) {
+                return res.status(404).send({ status: "error", error: "Error, No encuentra el usuario" });
+            }
+            // si me olvido la contraseña puedo actualizarla con update.password
+            if (update.password) {
+                update.password = createHash(update.password);
+            }
+            // aca podemos actualizar los datos del usuario que vamos a recibir desde el body
+            const updatedUser = await usuarioService.updateUser(user._id, update);
+            if (!updatedUser) {
+                return res.status(500).send({ status: "error", error: "Faltan datos, por favor completar para actualizar" });
+            }
+            //aca si tengo un error lo que hacemos es volver a la pagina de login para intantar nuevamente.
+
+            res.redirect('/login');
+            
+        } catch (error) {
+            console.error(error);
+            return res.status(500).send({ status: "error", error: "Faltan datos, por favor completar para actualizar" });
+        }
+    }
+
+
 
 export const createUser = async(req, res, next) =>{
     passport.authenticate('registro', (err,user, info)=>{
@@ -57,19 +83,36 @@ export const createUser = async(req, res, next) =>{
             return res.status(500).json({error: 'No se pudo registrar, vuelva a intentarlo '})
         }
         if(!user){
-            return res.reditect('/register')
+            return res.reditect('register')
         }
-        return res.redirect('/login')
+        return res.redirect('login')
     }) (req, res,next)
     
     
 }
 
 export const deleteUser = async(req,res)=>{
-    const user = req.body
-    let result = await usuarioService.deleteUser(user)
-    res.send({status:"success", result: result}) 
-}
+
+
+    try{
+        const userId = req.params.uid;
+        if(!userId){
+            return res.status(404).json({status:'Error', error: 'Error, completar id del usuario'})
+        }
+        const userdelete = await usuarioService.getUserById(userId);
+        if (!userdelete) {
+            return res.status(404).json({ status: 'Error', error: 'Error, No encuentra el usuario' });
+        }else{
+            return res.json({ status: 'Usuario eliminado correctamente' });
+
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ status: 'Error', error: 'Ocurrio un error no se puede eliminar usuario' });
+    }
+    }
+
+ 
 export const userForm = (req, res)=>{
     res.render('register')}
 
@@ -86,7 +129,7 @@ export const userSession = (req, res, next) =>{
         if(err){
             console.error(err)
             return res.status(500).json({error:'Error al iniciar session, verifique datos o por favor registrarse'})
-            return res.redirect('/register')
+            return res.redirect('register')
         }
         //si user.email coincide con admin que me envia al hbs de admin para poder modificar o editar lo que el quisiera y de caso contrario que te direccione al hbs de products para poder hacer una comprar como usuario común.
         if(user.email ===admin){
