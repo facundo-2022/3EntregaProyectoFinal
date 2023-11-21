@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
-/* const mongoose = require("mongoose");
-const mongoosePaginate = require("mongoose-paginate-v2");
- */
+import  mongoosePaginate from "mongoose-paginate-v2";
+ 
 const userCollection = "users";
 
 //El esquema de modelado de como van a lucir los datos
@@ -13,14 +12,13 @@ const userSchema = mongoose.Schema({
   age: String,
   password: String,
   cartId: {type: mongoose.Schema.Types.ObjectId, ref: 'cart'},
- // role: {type: String, required: true, default: 'user'},
+  role:{ type: String, enum: ["user", "admin"], default: "user"},
 });
 
 
-
+userSchema.plugin(mongoosePaginate);
 
 const userModel = mongoose.model(userCollection, userSchema);
 
-/* module.exports = { userModel }; */
  export default userModel
  

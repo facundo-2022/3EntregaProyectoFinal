@@ -26,7 +26,7 @@ export default class User {
     }
 
     //consultamos el usaurio por su id
-     getUserById = async() =>{
+     getUserById = async(id) =>{
         try {
             let user = await userModel.findOne({_id: id})
             return user
@@ -35,18 +35,23 @@ export default class User {
             return res.status(404).send({status:"error", error:'El id no coincide con el usuario'})
         }
     }
- 
 
-    //creamos el usuario en user y usamos los parametros desde userModel 
-    saveUser = async(user) => {
+    updateUser = async (id, user) => {
         try {
-            let result = await userModel.create(user)
+            let result = await userModel.updateOne({ _id: id }, { $set: user })
             return result
-            console.log('El usuario creo correctamente')
+        } catch (error) {
+            return null
+        }
+    }
+
+    deleteUser = async (id) => {
+        try {
+            let user = await userModel.deleteOne({ _id: id })
+            return user
         } catch (error) {
             console.log(error)
-            return res.status(404).send({status:"error", error:'Error al guardar usuario'})
-            
+            return null
         }
     }
 }

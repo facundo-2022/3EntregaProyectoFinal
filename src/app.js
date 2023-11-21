@@ -9,6 +9,7 @@ import bodyParser from 'body-parser';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 
+//import { generateToken, authToken } from ("../utils");
 /* const express = require("express");
 const mongoose = require("mongoose");
 
@@ -17,7 +18,7 @@ const usuarioRouter = require("./routes/usuarios.router");
 const passport = require("passport");
 const initializePassport = require("./config/passport.config");
 const productRouter = require("./routes/products.router");
-const cartRouter = require("./routes/carts.router");
+import cartRouter = require("./routes/carts.router");
 const { generateToken, authToken } = require("../utils");
 const cookieParser = require("cookie-parser"); */
 const PRIVATE_KEY = "CoderKey"
