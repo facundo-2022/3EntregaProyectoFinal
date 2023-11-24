@@ -2,7 +2,7 @@ import passport from "passport";
 import local from "passport-local";
 import  User from '../dao/clases/usuario.dao.js';
 import Cart from '../dao/clases/carts.dao.js'
-import { createHash, isValidatePassword } from "../../utils";
+import { createHash, isValidatePassword } from "../utils/utils.js";
 import GitHubStrategy from "passport-github2";
 import config  from './config.js';
 
@@ -25,7 +25,7 @@ const initializePassport = () => {
 //aca configuro la autenticación para GitHub para que con mi usuario de github pueda ingresar.
 const configureLocalStrategy = () => {
 // Configuración de la estrategia local de registro
-    passport.use('./register', new localStrategy(
+    passport.use('register', new localStrategy(
         { passReqToCallback: true, usernameField: 'email'}, async (req, username, password, done) => {
             const { first_name, last_name, email, age} = req.body;
             try {
@@ -64,7 +64,7 @@ const configureLocalStrategy = () => {
             }
         }
         ));
-    // Configuración de la estrategia local de inicio de sesión
+    // Configuración par ña estrategia local de inicio de sesión del usuario
     passport.use('login', new localStrategy({ usernameField: 'email' }, async (email, password, done) => {
         try {
             const user = await usuarioService.getUserByEmail(email);
@@ -85,11 +85,11 @@ const configureLocalStrategy = () => {
     
 }
 const configureGitHubStrategy = () => { 
-    // Configuración de la estrategia de registro con GitHub, previamente instale passport-github2
+    // Configuración de la estrategia de registro con GitHub, para poder utilizar esta opcion debemos instalar passport-github2
     passport.use('github', new GitHubStrategy({
-        clientID: clientID,
-        clientSecret: clientSecret,
-        callbackURL: callbackURL
+        clientID: "Iv1.f26e4f1f954a0d52",
+        clientSecret: "481456f66b327ccccb6c701d5717c5b97784e6db",
+        callbackURL: "http://localhost:8080/api/usuarios/githubcallback",
     }, async(accessToken, refreshToken, profile, done) => {
         try{
             let user = await usuarioService.getUserByEmail(profile._json.email)

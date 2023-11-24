@@ -13,7 +13,8 @@ const userSchema = mongoose.Schema({
   password: String,
   cartId: {type: mongoose.Schema.Types.ObjectId, ref: 'cart'},
   role:{ type: String, enum: ["user", "admin"], default: "user"},
-});
+},{ versionKey: false });
+
 
 
 userSchema.plugin(mongoosePaginate);
