@@ -1,6 +1,6 @@
 
 import express  from 'express'
-import {getProducts, getProductsById, createProducts, addProduct, deleteProducts, productForm} from '../Controllers/productsControllers.js'
+import {getProducts, getProductsById, createProducts, addProduct, deleteProduct, productForm} from '../Controllers/productsControllers.js'
  import {Router}  from 'express'
 
 const router = Router();
@@ -9,7 +9,7 @@ router.get("/", getProducts)
 router.get("/:pid", getProductsById)
 router.post("/register", createProducts)
 router.post("/:pid/products", addProduct)
-router.delete("/pid", deleteProducts)
+router.delete("/pid", deleteProduct)
 
 
 export default router

@@ -23,7 +23,7 @@ const port = 8080;
 const cookiePass = config.cookiePass;
 const adminPass = config.adminPass;
 const mongoURL = config.mongoUrl;
-
+//configuracion de motor de pantillas y las vitas de las rutas a utilizar
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const hbs = handlebars.create({})
@@ -76,7 +76,7 @@ app.use(bodyParser.urlencoded({extends:true}))
 app.use(bodyParser.json())
 app.use(cors({ origin: 'http://localhost:5500', methods: ["GET", "POST", "PUT", "DELETE"] }))
 
-//esto es lo que vamos a consumir de routes
+//esto es lo que vamos a consumir de routes mis peticiones
 app.use("/usuarios", usuarioRouter);
 app.use("/products", productRouter);
 app.use("/carts", cartRouter);

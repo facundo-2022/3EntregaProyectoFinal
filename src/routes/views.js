@@ -42,7 +42,7 @@ router.get('/admin', async (req, res) => {
 });
 
 router.get('/register', (req, res) => {
-    res.render('register')
+    res.render('register.handlebars')
 });
 
 router.get('/failregister', async (req, res) => {
@@ -65,7 +65,7 @@ router.get('/profile', (req, res) => {
         return res.redirect('/');
     }
     const { first_name, last_name, email, age } = req.session.user;
-    res.render('profile.hbs', { first_name, last_name, email, age });
+    res.render('profile', { first_name, last_name, email, age });
 });
 
 router.get('/session', (req, res) => {

@@ -1,21 +1,22 @@
 import mongoose from "mongoose";
-/* const mongoose = require("mongoose");
-const mongoosePaginate = require("mongoose-paginate-v2"); */
+
+import mongoosePaginate from"mongoose-paginate-v2";
+
 
 const productCollection = "products";
 
 const productSchema = mongoose.Schema({
-  title: String,
-  description: String,
-  category: String,
-  price: Number,
-  stock: Number,
-  image: String,
- id: String
-});
+  title: {type: String, required: true},
+  description: {type:String,required: true},
+  category: {type:String,required: true},
+  price:{type:Number,required: true} ,
+  stock: {type:Number,required: true},
+  code:{type:Number, required: true},
+  thumbnails: {type:Array, required: false} ,
+},{ versionKey: false });
 
-/* productSchema.plugin(mongoosePaginate); */
+ productSchema.plugin(mongoosePaginate); 
 const productModel = mongoose.model(productCollection, productSchema);
 
-/* module.exports = { productModel }; */
+
 export default productModel

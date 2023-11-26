@@ -114,7 +114,7 @@ export const deleteUser = async(req,res)=>{
 
  
 export const userForm = (req, res)=>{
-    res.render('register')}
+    res.render('/register')}
 
 export const userSession = (req, res, next) =>{
     passport.authenticate('login', (err, user, info)=>{
@@ -129,7 +129,10 @@ export const userSession = (req, res, next) =>{
         if(err){
             console.error(err)
             return res.status(500).json({error:'Error al iniciar session, verifique datos o por favor registrarse'})
-            return res.redirect('register')
+            
+        }
+        if(!user){
+            return res.redirect('/register')
         }
         //si user.email coincide con admin que me envia al hbs de admin para poder modificar o editar lo que el quisiera y de caso contrario que te direccione al hbs de products para poder hacer una comprar como usuario común.
         if(user.email ===admin){
@@ -141,8 +144,7 @@ export const userSession = (req, res, next) =>{
         }
         
 
-    })
-    res.render('login')
+    })(req, res, next);
 }
 
 export const login = passport.authenticate('login', {
@@ -151,5 +153,5 @@ export const login = passport.authenticate('login', {
 })
 export  const logout = (req, res) => {
     req.logout();
-    res.redirect('/login');
+    res.redirect('login');
   };
