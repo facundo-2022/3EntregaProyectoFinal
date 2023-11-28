@@ -114,7 +114,7 @@ export const deleteUser = async(req,res)=>{
 
  
 export const userForm = (req, res)=>{
-    res.render('./register')}
+    res.render('registe.handlebars')}
 
 export const userSession = (req, res, next) =>{
     passport.authenticate('login', (err, user, info)=>{
@@ -153,5 +153,5 @@ export const login = passport.authenticate('login', {
 })
 export  const logout = (req, res) => {
     req.logout();
-    res.redirect('login');
+    res.redirect('/login');
   };
