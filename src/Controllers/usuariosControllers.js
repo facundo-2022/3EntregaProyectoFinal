@@ -83,7 +83,7 @@ export const createUser = async(req, res, next) =>{
             return res.status(500).json({error: 'No se pudo registrar, vuelva a intentarlo '})
         }
         if(!user){
-            return res.reditect('register')
+            return res.reditect('./register')
         }
         return res.redirect('login')
     }) (req, res,next)
@@ -114,7 +114,7 @@ export const deleteUser = async(req,res)=>{
 
  
 export const userForm = (req, res)=>{
-    res.render('/register')}
+    res.render('./register')}
 
 export const userSession = (req, res, next) =>{
     passport.authenticate('login', (err, user, info)=>{

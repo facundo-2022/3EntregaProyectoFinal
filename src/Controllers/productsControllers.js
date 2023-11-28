@@ -43,10 +43,16 @@ export const addProduct = async(req, res) => {
         if(Object.keys(updateproduct).length ==0){
             return res.send({status: 'error', error: 'completar lo datos para acutilizar los productos'})
         }
-        let result = await productService.getProductsById(req.params.bid)
-        product.push(result)
-        await productService.updateProduct(result._id, result)
-        res.send({status: "success", result: "Producto actualizado"})
+        if(updateproduct.stock === "0"){
+            updateproduct.status = false;
+        }else{updateproduct.status = true;
+        console.log("Producto se actualizo:" + updateproduct)
+    }
+        let result = await productService.addProduct(pid, updateproduct);
+        if(!result){
+            return res.send({status: "success", error: "no se encontro el producto"})
+        }
+        
     }catch(error){
         console.error(`Error: ${error}`);
         res.send({ status: "error", error: 'Error no se pudo actualizar el producto.' });
@@ -81,9 +87,10 @@ export const deleteProduct = async (req, res) =>{
     
     
 }
-
+/* 
 export const productForm = (req, res) =>{
     res.render('product')
 }
 
 
+ */

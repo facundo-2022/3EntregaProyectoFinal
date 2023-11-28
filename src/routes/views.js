@@ -1,7 +1,7 @@
 import express from "express";
 import passport from "passport";
 import { getProducts} from '../Controllers/productsControllers.js'
-import { createUser,  userSession } from '../Controllers/usuariosControllers.js'
+import { createUser,  userSession , getUser} from '../Controllers/usuariosControllers.js'
 import path from "path"
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -12,9 +12,9 @@ const router = express.Router();
 
 // Rutas
 
-router.post('/register', createUser)
+router.post('register', createUser)
 
-router.post('/login', userSession) 
+router.post('login', userSession) 
 
 router.get('/products', getProducts)
 
@@ -42,7 +42,7 @@ router.get('/admin', async (req, res) => {
 });
 
 router.get('/register', (req, res) => {
-    res.render('register.handlebars')
+    res.render('register')
 });
 
 router.get('/failregister', async (req, res) => {

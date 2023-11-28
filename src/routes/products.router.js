@@ -1,10 +1,10 @@
 
 import express  from 'express'
-import {getProducts, getProductsById, createProducts, addProduct, deleteProduct, productForm} from '../Controllers/productsControllers.js'
+import {getProducts, getProductsById, createProducts, addProduct, deleteProduct, /* productForm */} from '../Controllers/productsControllers.js'
  import {Router}  from 'express'
 
 const router = Router();
-router.get('/saveProduct', productForm)
+//router.get('/saveProduct', productForm)
 router.get("/", getProducts)
 router.get("/:pid", getProductsById)
 router.post("/register", createProducts)
