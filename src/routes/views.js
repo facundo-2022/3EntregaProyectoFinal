@@ -1,7 +1,7 @@
 import express from "express";
 import passport from "passport";
 import { getProducts} from '../Controllers/productsControllers.js'
-import { createUser,  userSession , getUser} from '../Controllers/usuariosControllers.js'
+import { createUser,  userSession , updateUser} from '../Controllers/usuariosControllers.js'
 import path from "path"
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -10,16 +10,16 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const router = express.Router();
 
-// Rutas
+// mis peticiones de las vistas 
 
-router.post('register', createUser)
+router.post('/register', createUser)
 
-router.post('login', userSession) 
+router.post('/login', userSession) 
 
 router.get('/products', getProducts)
 
 router.get('/', (req, res) => {
-    res.render('login');
+    res.redirect('login');
 });
 
 router.get('/restore', (req, res) => {
@@ -42,20 +42,20 @@ router.get('/admin', async (req, res) => {
 });
 
 router.get('/register', (req, res) => {
-    res.render('register')
+    res.redirect('register')
 });
 
 router.get('/failregister', async (req, res) => {
-    res.send({ error: "Fallo el registro" });
+    res.send({ error: "No se pudo registrar correctamente, vuelva intentarlo" });
 });
 
 router.get('/logout', (req, res) => {
-    // El destroy elimina datos de sesión
+    // 
     req.session.destroy(err => {
         if (!err) {
             res.redirect('/');
         } else {
-            res.send({ status: 'Logout ERROR', body: err });
+            res.send({ status: 'Error al realizar logout', body: err });
         }
     });
 });
@@ -65,7 +65,7 @@ router.get('/profile', (req, res) => {
         return res.redirect('/');
     }
     const { first_name, last_name, email, age } = req.session.user;
-    res.render('profile', { first_name, last_name, email, age });
+    res.render('profile.hbs', { first_name, last_name, email, age });
 });
 
 router.get('/session', (req, res) => {

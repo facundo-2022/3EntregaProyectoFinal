@@ -4,9 +4,10 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { dirname } from 'path'
 
-const productService = new Product()
+
 const __filename = fileURLToPath(import.meta.url)
 const __dirnname = dirname(__filename)
+const productService = new Product()
 export const createProducts = async(req, res) => {
     try{
         let { title, description, category, price, stock} = req.body;
@@ -15,7 +16,8 @@ export const createProducts = async(req, res) => {
     }
     const thumbnailFilename = req.file ? req.file.filename : null;
         const thumbnails = thumbnailFilename ? [thumbnailFilename] : [];
-        // Agregar el producto en la base de datos
+        // cargamos los nuevos productos a la base de datos
+
         let result = await productService.createProduct({
             title, 
             description, 
@@ -24,17 +26,15 @@ export const createProducts = async(req, res) => {
             stock,
             code,
             thumbnails,
-            status: true})
-            res.send({status: "success", result: result})
+            status: true
+        })
+            res.send({status: "success", payload: result})
+            console.log(result)
 } catch(error){
-        res.status(304).send({ status: "error", error: 'Error, no se pudo agregar  producto. novedades del error: ' + error.message });
-    }
-    const product = req.body
-    let result = await productService.createProduct(product)
-   
-    res.send({status: "success", result: result})
-}
+        res.status(304).send({ status: "error", error: 'Error, no se pudo agregar  producto'  });
 
+}
+}
 export const addProduct = async(req, res) => {
     try{
         let {pid} = req.params

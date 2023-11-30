@@ -31,7 +31,7 @@ const configureLocalStrategy = () => {
             try {
                 let user = await usuarioService.getUserByEmail(username);
                 if (user) {
-                    console.log("El usuario ya existe");
+                    console.log("El usuario registrado con exito");
                     return done(null, false);
                 }
                 

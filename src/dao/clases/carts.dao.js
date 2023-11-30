@@ -21,7 +21,7 @@ export default class Cart{
         }
     }
 
-    createCart= async() => {
+    createCart= async(cart) => {
         try {
             let result = await cartModel.create(cart)
             return result
@@ -31,7 +31,7 @@ export default class Cart{
         }
     }
 
-    resolveCart= async(id, art) => {
+    resolveCart= async(id, cart) => {
         try {
             let result = await orderModel.updateOne({_id: id},{$set : cart})
         } catch (error) {

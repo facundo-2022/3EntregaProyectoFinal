@@ -5,7 +5,7 @@ import cors from 'cors'
 import usuarioRouter from './routes/usuarios.router.js'
 import productRouter from './routes/products.router.js'
 import cartRouter from './routes/carts.router.js'
-import views from './routes/views.js'
+import view from './routes/views.js'
 import handlebars from 'express-handlebars';
 import bodyParser from 'body-parser'; 
 import { fileURLToPath } from 'url';
@@ -31,7 +31,7 @@ const hbs = handlebars.create({})
 app.engine("handlebars",  handlebars.engine ());
 app.set("views", path.join(__dirname + "/views"));
 app.set("view engine", "handlebars"); 
-//app.use(express.static(path.join(__dirname, 'public')));
+/* app.use(express.static(path.join(__dirname, 'public'))); */
 
 
 //Enlace de conexion con mongoose atlas
@@ -72,15 +72,15 @@ app.use(cookieParser(cookiePass))
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(bodyParser.urlencoded({extends:true}))
-app.use(bodyParser.json())
+/* app.use(bodyParser.urlencoded({extends:true}))
+app.use(bodyParser.json()) */
 app.use(cors({ origin: 'http://localhost:5500', methods: ["GET", "POST", "PUT", "DELETE"] }))
 
 //esto es lo que vamos a consumir de routes mis peticiones
 app.use("/usuarios", usuarioRouter);
 app.use("/products", productRouter);
 app.use("/carts", cartRouter);
-app.use('/',views)
+app.use('/',view)
 
 
 

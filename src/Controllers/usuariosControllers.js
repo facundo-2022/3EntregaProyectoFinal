@@ -29,20 +29,23 @@ export const getUser = async(req, res) =>{
 
 export const getUserById = async(req, res) =>{
 
-    try{ const {uid} = req.params
-    const user = await usuarioService.getUserById(uid)
-    if(user){
-        res.send({status:"success", payload:user})
-    }else{
+    try{
+         const { uid } = req.params;
+        let user = await usuarioService.getUserById(uid)
+        console.log(user)
+    if(!user){
         res.send({status:"error", message: 'usuario no registrado, por favor registrarse' })
+        
+    }else{
+        res.send({status:"success", payload: user})
     }
-
+  
     }catch(error){
         res.send({status:"error", error:' no se encuentra registrado el usuario'})
     }
-   
+    
 }
- 
+
 
 export const updateUser = async(req, res) =>{
     
@@ -74,18 +77,31 @@ export const updateUser = async(req, res) =>{
         }
     }
 
-
+    export const getUserByEmail = async (req, res) => {
+        try {
+            const { email } = req.body.email
+            const user = await usuarioService.getUserByEmail(email);
+            if (!user) {
+                res.send({ status: "error", error: 'Usuario no encontrado.' });
+            } else {
+                req.session.user = user;
+                res.send({ result: "success", payload: user });
+            }
+        } catch (error) {
+            res.send({ status: "error", error: 'Error al obtener el usuario.' });
+        }
+    }
 
 export const createUser = async(req, res, next) =>{
-    passport.authenticate('registro', (err,user, info)=>{
+    passport.authenticate('register', (err,user, info)=>{
         if(err){
             console.log(err)
             return res.status(500).json({error: 'No se pudo registrar, vuelva a intentarlo '})
         }
         if(!user){
-            return res.reditect('./register')
+            return res.redirect('./register')
         }
-        return res.redirect('login')
+        return res.redirect('/')
     }) (req, res,next)
     
     
@@ -113,8 +129,6 @@ export const deleteUser = async(req,res)=>{
     }
 
  
-export const userForm = (req, res)=>{
-    res.render('register')}
 
 export const userSession = (req, res, next) =>{
     passport.authenticate('login', (err, user, info)=>{

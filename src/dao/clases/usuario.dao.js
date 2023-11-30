@@ -32,7 +32,7 @@ export default class User {
             return user
         } catch (error) {
             console.log(error)
-            return res.status(404).send({status:"error", error:'El id no coincide con el usuario'})
+           return null
         }
     }
 
@@ -54,4 +54,15 @@ export default class User {
             return null
         }
     }
+
+    getUserByEmail = async (email) => {
+        try {
+            let user = await userModel.findOne({ email: email });
+            return user;
+        } catch (error) {
+            console.log(error);
+            return null;
+        }
+    }
 }
+

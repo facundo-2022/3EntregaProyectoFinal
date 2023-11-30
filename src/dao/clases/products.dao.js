@@ -10,20 +10,19 @@ export default class Product {
             return null
         }
     }
-    getProductsById = async(id) =>{
+    getProductsById = async(pid) =>{
         try {
-            let result = await productModel.findOne({_id: id})
+            let result = await productModel.findOne({_id: pid})
             return result
         } catch (error) {
             console.log(error)
             return null
         }
     }
-    createProducts = async(product) =>{
+    createProduct = async(product) =>{
         try {
             let result = await productModel.create(product)
             return result
-            if(!result) return res.status(500).send({status: "error", error: "Error al crear un producto"})
         } catch (error) {
             console.log(error)
             return null
@@ -38,27 +37,31 @@ export default class Product {
             return null
         }
     }
-
-   /*  saveProduct = async(user) => {
-        try {
-            let result = await productModel.create()
-            return result
-            console.log('El usuario creo correctamente')
-        } catch (error) {
-            console.log(error)
-            return res.status(404).send({status:"error", error:'Error al guardar usuario'})
-            
-        }
-    } */
-
+ 
     deleteProduct = async (id, product) =>{
         try{
-            let result = await productModel.deleteOne({ _id: uid });
+            let result = await productModel.deleteOne({ _id: pid });
             res.send({ result: "success", payload: result });
             return result
         }catch{
             console.log(error)
           return res.status(500).send({status:"error", error:'error al eliminar el producto'})
+        }
+    }
+
+    paginate = async (conditions, options) => {
+        try {
+            const { page, limit, sort } = options;
+
+            const result = await productModel.paginate(conditions, {
+                page,
+                limit,
+                sort,
+            });
+            return result;
+        } catch (error) {
+            console.log(error);
+            return null;
         }
     }
 }
