@@ -17,6 +17,7 @@ import initializePassport from './config/passport.js'
 import passport from 'passport';
 import path from 'path';
 
+
 const PRIVATE_KEY = "CoderKey"
 const app = express();
 const port = 8080;
@@ -30,9 +31,8 @@ const hbs = handlebars.create({})
 
 app.engine("handlebars",  handlebars.engine ());
 app.set("views", path.join(__dirname + "/views"));
-app.set("view engine", "handlebars"); 
-/* app.use(express.static(path.join(__dirname, 'public'))); */
-
+app.set("view engine", "hbs");  
+app.use(express.static(path.join(__dirname, 'public'))); 
 
 //Enlace de conexion con mongoose atlas
 

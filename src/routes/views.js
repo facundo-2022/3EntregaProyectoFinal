@@ -1,7 +1,7 @@
 import express from "express";
 import passport from "passport";
 import { getProducts} from '../Controllers/productsControllers.js'
-import { createUser,  userSession , updateUser} from '../Controllers/usuariosControllers.js'
+import { createUser,  userSession , updateUser/* , userForm */} from '../Controllers/usuariosControllers.js'
 import path from "path"
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -17,9 +17,11 @@ router.post('/register', createUser)
 router.post('/login', userSession) 
 
 router.get('/products', getProducts)
+router.get('/register',(req, res) =>{
+    res.render('/register')})
 
 router.get('/', (req, res) => {
-    res.redirect('login');
+    res.render('login');
 });
 
 router.get('/restore', (req, res) => {
@@ -28,7 +30,7 @@ router.get('/restore', (req, res) => {
 });
 
 router.get('/faillogin', (req, res) => {
-    res.redirect('/')
+    res.render('/')
 });
 
 router.get('/admin', async (req, res) => {
@@ -41,9 +43,10 @@ router.get('/admin', async (req, res) => {
     }
 });
 
-router.get('/register', (req, res) => {
-    res.redirect('register')
-});
+/* router.get('/register', (req, res) => {
+    res.render('register.hbs')
+ 
+}); */
 
 router.get('/failregister', async (req, res) => {
     res.send({ error: "No se pudo registrar correctamente, vuelva intentarlo" });

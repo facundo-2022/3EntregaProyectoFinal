@@ -1,5 +1,5 @@
 import {Router} from "express";
-import { getUser, getUserById, updateUser,createUser, deleteUser, getUserByEmail } from "../Controllers/usuariosControllers.js";
+import { getUser, getUserById, updateUser,createUser, deleteUser, getUserByEmail /* , userForm  */} from "../Controllers/usuariosControllers.js";
 
 const router = Router()
 
@@ -9,11 +9,11 @@ const router = Router()
 /* router.get("/register", userForm) */
 
 router.get("/", getUser)
+/* router.get('/register', userForm) */ 
 router.get("/:uid", getUserById)
 router.post('/register', createUser)
 router.post('/:uid', updateUser)
 router.delete('/:uid', deleteUser)
-
 router.get("/:email", getUserByEmail)
 
 

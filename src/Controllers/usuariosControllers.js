@@ -169,3 +169,6 @@ export  const logout = (req, res) => {
     req.logout();
     res.redirect('/login');
   };
+ /*  export const userForm  =(req, res )  =>{
+    res.render('././register.hbs')
+ }  */

@@ -10,29 +10,30 @@ const __dirnname = dirname(__filename)
 const productService = new Product()
 export const createProducts = async(req, res) => {
     try{
-        let { title, description, category, price, stock} = req.body;
-        if (!title || !description || !category || !price || !stock || !code) {
+        console.log(req.body)
+         let { title, description, category, price, stock, code} = req.body;
+         if (!title || !description || !category || !price || !stock || !code) {
             return res.status(400).send({ status: "error", error: 'Campo obligatorio, Por favor completar los datos ' });
-    }
-    const thumbnailFilename = req.file ? req.file.filename : null;
-        const thumbnails = thumbnailFilename ? [thumbnailFilename] : [];
-        // cargamos los nuevos productos a la base de datos
-
-        let result = await productService.createProduct({
-            title, 
-            description, 
+     }
+     
+    // /* const thumbnailFilename = req.file ? req.file.filename : null;
+    //     const thumbnails = thumbnailFilename ? [thumbnailFilename] : []; */
+    //     // cargamos los nuevos productos a la base de datos
+     let result = await productService.createProduct({
+         title, 
+           description, 
             category, 
             price, 
-            stock,
+             stock,
             code,
-            thumbnails,
-            status: true
-        })
-            res.send({status: "success", payload: result})
-            console.log(result)
+     //       thumbnails,
+    //        status: true
+         })
+             res.send({status: "success", payload: result})
+    //         //console.log(result)
 } catch(error){
-        res.status(304).send({ status: "error", error: 'Error, no se pudo agregar  producto'  });
-
+        res.status(404).send({ status: "error", error: 'Error, no se pudo agregar  producto'  });
+        
 }
 }
 export const addProduct = async(req, res) => {

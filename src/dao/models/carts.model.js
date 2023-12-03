@@ -1,34 +1,23 @@
 import mongoose from 'mongoose'
-/* const mongoose = require("mongoose"); */
-/* const mongoosePaginate = require("mongoose-paginate-v2"); */
+import mongoosePaginate from 'mongoose-paginate-v2'
 
 const cartCollection = "carts";
 
+const cartProductSchema = new mongoose.Schema({
+  product: { type: mongoose.Schema.Types.ObjectId, ref: 'productos' },
+  quantity: { type: Number, required: true },
+},{ _id: false });
 
 
 const cartSchema = mongoose.Schema({
-  products: {
-    type: [
-      {
-        product: {
-          type: mongoose.Schema.Types.ObjectId,
-          ref: "products",
-        },
-        id:{
-          type: String, require: true
-        },
-        quantity: { type: Number, default: 0 },
-      },
-    ],
-    default:[]
-  },
+  products: [cartProductSchema],
+   totla:{type: Number, required: true, default: 0},
+  },{ versionKey: false });
+  ;
 
-});
 
-/* 
-cartSchema.plugin(mongoosePaginate); */
+cartSchema.plugin(mongoosePaginate); 
 const cartModel = mongoose.model(cartCollection, cartSchema);
 
-/* module.exports = { cartModel };
- */
+
 export default cartModel

@@ -5,48 +5,108 @@ import Product from '../dao/clases/products.dao.js'
 
 
 const cartService = new Cart()
+const productService = new Product()
 export const getCart = async(req, res) => {
-    let result = await cartService.getCart(req.params)
-    res.send({status: "success", result: result})
+    try{
+        let cart = await cartService.getCart()
+        res.send({status: "success", payload: cart})
+    }catch(error){
+        res.status({status: "error", error:'No se pudo obtener los carritos'})
+    }
+    
 }
 
 export const getCartById = async(req, res) => {
-    const {cid} = req.params
-    let cart = await userService.getCartById(uid)
-    res.send({status: "success", result: cart})
+    try{
+        const {cid} = req.params
+        let cart = await userService.getCartById(uid)
+        if(!cart){
+            res.send({status:'error', error:'carrito no encontrado'})
+        }
+        res.send({status: "success", payload: cart})
+    }catch(error){
+        res.send({status:' error', error: 'Error al buscar el carrtio por su ID'})
+    }
 }
 
 
 export const createCart = async(req, res) => {
-    const {cart, products} = req.body
-    const resultProduct = await productService.getProductsById(product) 
-    const resultCart = await cartService.getCartById(cart)
-    let actualCart = resultCart.products.filter(product => product.includes(product.id))
-    let sum = actualCart.reduce((acc, prev) => {
-        acc += prev.price
-        return acc
-    }, 0)
-    let cartNumber = Date.Now() + Math.floor(Math.random() * 10000 + 1)
-    let cartNew = {
-        number : cartNumber,
-        cart,
-        products: actualCart.map(product => product.id)
-    }
-    let cartResult = await cartService.createCart(cartNew)
-    res.send({status : "success", result : cartResult})
+    try{
+        const newCart = {
+            products :[],
+            total : 0,
+        }
+        let cartResult = await cartService.createCart(newCart)
+    res.send({status : "success", payload : cartResult})
 
+    }catch(error){
+         res.send({status: 'error', error: 'Error al agregar el carrito'})
+    }
 }
 
-export const resolveCart = async(req, res) => {
-    const {resolveCart} = res.query
-    let cart = await cartService.getCartById(req.params.cid)
-    cart.status = resolveCart
-    await cartService.resolveCart(cart._id, cart)
-    res.send({status: "success", result: "orden resuelta"})
+export const updateCart = async(req, res) => {
+    try{
+        const pid = req.params.id
+        const cid = req.params.id
+        const quantity = parseInt(req.body.quantity)
+        if(quantity <= 0){
+            return res.send({status:'Error', error: 'Por favor debe ingresar la o las cantidades del producto'})
+        }
+        const addCart = await cartService.getCartById(cid)
+        if(!addCart){
+            return res.send({status: 'error', error:"carrito no existe"})
+        }
+        const product = await productService.getProductsById(pid)
+        if(!product){
+            return res.send({status:'error', error:'No se encontro dicho producto o no existe, por favor verificar'})
+        }else{
+            res.send({status:'message', message: 'Existe el producto'})
+        }
+        if(product.stock < quantity){
+            return res.send({status: 'error', error: 'Producto sin stock'})
+        }else{
+            return res.send({status: 'message', message:'Producto con stock'})
+        }
+        //una vez que los producto estan el carrito debo verificar si los mismo se encuentrar agregados para descontar del stock.
+        const productincart = await cartService.linkproductincart(cid,pid)
+        if(productincart !== -1){
+            const productexists = addCart.products[linkproductincart]
+            if(productexists){
+                productexists.quantity += quantity
+            }
+        }else{
+            addCart.products.push({product: pid, quantity})
+        }
+        //markModified es un método que se utiliza para notificar a Mongoose que un camino específico dentro de un documento ha sido modificado y debe ser guardado. Esto es útil cuando estás trabajando con campos anidados en documentos MongoDB y necesitas informar a Mongoose sobre cambios en esos campos para que se reflejen correctamente al guardar el documento.
+        addCart.markModified('products')
+        const newStock = product.stock-quantity
+        product.stock = newStock
+        await cartService.updateCart(cid,addCart)
+        await productService.updateProduct(pid, product)
+        const newTotal = addCart.total + (product.price * quantity);
+        const totalResult = await cartService.CartTotal(cid, newTotal);
+        return res.json({ message: 'Producto agregado al carrito correctamente.' });
+    }catch(error){
+        console.error('Error al agregar el producto:', error);
+        return res.status(500).json({ message: 'Error al agregar el producto.' });
+    }
 }
 
 export const deleteCart = async(req,res) => {
+    try{
+
+    }catch(error){
+
+    }
 
 
+}
+
+export const deleteproductontheCart = async (req, res)=> {
+  try{
+        
+    }catch(error){
+
+    }
 
 }
