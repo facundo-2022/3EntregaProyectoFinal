@@ -32,7 +32,7 @@ export const getUserById = async(req, res) =>{
     try{
          const { uid } = req.params;
         let user = await usuarioService.getUserById(uid)
-        console.log(user)
+    
     if(!user){
         res.send({status:"error", message: 'usuario no registrado, por favor registrarse' })
         

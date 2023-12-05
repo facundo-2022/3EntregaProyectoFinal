@@ -17,10 +17,11 @@ export default class User {
         try {
             let users = await userModel.find()
             return users
-            console.log("El usuario encontrado contiene los siguientes datos:" + users)
+            //console.log("El usuario encontrado contiene los siguientes datos:" + users)
         } catch (error) {
             console.log(error)
-            return res.status(404).send({status:"error", error:'usuario no existe, verificar datos'})
+            return null                                                         
+            //return res.status(404).send({status:"error", error:'usuario no existe, verificar datos'})
             
         }
     }

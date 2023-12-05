@@ -5,9 +5,8 @@ import cors from 'cors'
 import usuarioRouter from './routes/usuarios.router.js'
 import productRouter from './routes/products.router.js'
 import cartRouter from './routes/carts.router.js'
-import view from './routes/views.js'
+import viewsRouter from './routes/views.router.js'
 import handlebars from 'express-handlebars';
-import bodyParser from 'body-parser'; 
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
 import cookieParser from 'cookie-parser';
@@ -29,9 +28,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const hbs = handlebars.create({})
 
-app.engine("handlebars",  handlebars.engine ());
-app.set("views", path.join(__dirname + "/views"));
-app.set("view engine", "hbs");  
+app.engine("handlebars",  hbs.engine);
+app.set("views", path.join(__dirname + "views"));
+app.set("view engine", "handlebars");  
 app.use(express.static(path.join(__dirname, 'public'))); 
 
 //Enlace de conexion con mongoose atlas
@@ -80,7 +79,7 @@ app.use(cors({ origin: 'http://localhost:5500', methods: ["GET", "POST", "PUT", 
 app.use("/usuarios", usuarioRouter);
 app.use("/products", productRouter);
 app.use("/carts", cartRouter);
-app.use('/',view)
+app.use('/',viewsRouter)
 
 
 

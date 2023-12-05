@@ -1,7 +1,7 @@
 import express from "express";
 import passport from "passport";
 import { getProducts} from '../Controllers/productsControllers.js'
-import { createUser,  userSession , updateUser/* , userForm */} from '../Controllers/usuariosControllers.js'
+import { createUser,  userSession , /* , userForm */} from '../Controllers/usuariosControllers.js'
 import path from "path"
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -17,12 +17,17 @@ router.post('/register', createUser)
 router.post('/login', userSession) 
 
 router.get('/products', getProducts)
-router.get('/register',(req, res) =>{
-    res.render('/register')})
 
 router.get('/', (req, res) => {
-    res.render('login');
+    res.render('0-login.hbs');
 });
+
+router.get('/register',(req, res) =>{
+    //res.send("bienvenido")
+    res.render('register.hbs')
+})
+
+
 
 router.get('/restore', (req, res) => {
     const email = req.query.email || ''
