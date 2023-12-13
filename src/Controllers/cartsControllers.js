@@ -1,11 +1,15 @@
 //importamos a carts para crear el carrito con sus atributos y a products para que al agregar, modificar, actualizar o eliminar un prodructo lo llamemos desde el dao desde la class creada por sus endpoints
 
+import { configDotenv } from 'dotenv'
 import Cart from '../dao/clases/carts.dao.js'
 import Product from '../dao/clases/products.dao.js'
-
+import Ticket from '../dao/clases/ticket.dao.js'
+import { v4 as uuidv4 } from 'uuid';
+import { format } from 'date-fns';
 
 const cartService = new Cart()
 const productService = new Product()
+const ticketService = new Ticket()
 export const getCart = async(req, res) => {
     try{
         let cart = await cartService.getCart()
@@ -46,46 +50,38 @@ export const createCart = async(req, res) => {
 
 export const updateCart = async(req, res) => {
     try{
-        const pid = req.params.id
-        const cid = req.params.id
-        const quantity = parseInt(req.body.quantity)
+        const pid = req.params.pid
+        const cid = req.params.cid
+        console.log(pid,cid)
+        const quantity = req.body.quantity
         if(quantity <= 0){
             return res.send({status:'Error', error: 'Por favor debe ingresar la o las cantidades del producto'})
         }
         const addCart = await cartService.getCartById(cid)
+        console.log(addCart)
         if(!addCart){
             return res.send({status: 'error', error:"carrito no existe"})
         }
         const product = await productService.getProductsById(pid)
         if(!product){
             return res.send({status:'error', error:'No se encontro dicho producto o no existe, por favor verificar'})
-        }else{
-            res.send({status:'message', message: 'Existe el producto'})
         }
         if(product.stock < quantity){
             return res.send({status: 'error', error: 'Producto sin stock'})
-        }else{
-            return res.send({status: 'message', message:'Producto con stock'})
         }
         //una vez que los producto estan el carrito debo verificar si los mismo se encuentrar agregados para descontar del stock.
         const productincart = await cartService.linkproductincart(cid,pid)
-        if(productincart !== -1){
-            const productexists = addCart.products[linkproductincart]
-            if(productexists){
+        if(typeof productincart === "number" ){
+            const productexists = addCart.products[productincart]
                 productexists.quantity += quantity
-            }
+                res.send({status: 'success', message:'Se agrego una unidad al producto existente',result: productincart})
+        }else if(!productincart){
+            return res.send({status:'error', error: 'Obtuvimos error en el metodo de cartdao'})
+         
         }else{
-            addCart.products.push({product: pid, quantity})
+            res.send({status: 'success', result: productincart})
         }
-        //markModified es un método que se utiliza para notificar a Mongoose que un camino específico dentro de un documento ha sido modificado y debe ser guardado. Esto es útil cuando estás trabajando con campos anidados en documentos MongoDB y necesitas informar a Mongoose sobre cambios en esos campos para que se reflejen correctamente al guardar el documento.
-        addCart.markModified('products')
-        const newStock = product.stock-quantity
-        product.stock = newStock
-        await cartService.updateCart(cid,addCart)
-        await productService.updateProduct(pid, product)
-        const newTotal = addCart.total + (product.price * quantity);
-        const totalResult = await cartService.CartTotal(cid, newTotal);
-        return res.json({ message: 'Producto agregado al carrito correctamente.' });
+     
     }catch(error){
         console.error('Error al agregar el producto:', error);
         return res.status(500).json({ message: 'Error al agregar el producto.' });
@@ -101,7 +97,7 @@ export const deleteCart = async(req,res) => {
             return res.send(404).json({status:"error", error:'no se encuentra el carrito'})
         }
         //el lo lo utilizamos para por tener los producto que habiamos comprado supuestamente en el carrito vuelvan al stock de cada producto
-        for (const productInTheCart of removeCart.products) {
+        for (const productincart of removeCart.products) {
             const product = await productService.getProductById(productInTheCart.product);
             const quantity = productInTheCart.quantity;
 
@@ -145,9 +141,9 @@ export const deleteproductontheCart = async (req, res)=> {
         if (productInTheCart.quantity < quantity) {
             return res.status(400).json({ error: 'La cantidad a eliminar es mayor que la cantidad en el carrito.' });
         }
-        // Restar la cantidad del producto en el carrito
+        
         productInTheCart.quantity -= quantity;
-        // Actualizar el stock del producto y el total del carrito
+       
         product.stock += quantity;
         const productTotal = product.price * quantity;
         cart.total -= productTotal;
@@ -163,4 +159,53 @@ export const deleteproductontheCart = async (req, res)=> {
         res.status(500).json({ error: 'Error al eliminar el producto del carrito.' });
     }
 
+}
+export const purchease = async (req, res)=> {
+   try {
+    const cartId = req.params.cid
+    const cart = await cartService.getCartById(cartId)
+    if(!cart){
+      return  res.send({status: 'error', error: 'Carrito no encontrado'})
+    }
+    
+    let amount = 0;
+    for (let i = 0; i < cart.products.length; i++) {
+        const product = await productService.getProductsById(cart.products[i].product)
+        if(product.stock > cart.products[i].quantity ){
+            cart.products.splice(i,1)
+            cart.total--
+            product.stock -= cart.products[i].quantity
+            await productService.updateProduct(product.id, { stock: product.stock });
+
+            const totalProduct = product.price * cart.products[i].quantity;
+            amount += totalProduct;
+
+
+            console.log(`Producto: ${product.title}, Cantidad: ${cart.products[i].quantity}, Subtotal: ${totalProduct}`);
+        } 
+        
+    }
+
+    ///para generar el unico code utilice un formate que  saque de internet el uuid para generar un unico codigo universal. tuve que instalar el uuid y el date-fns para el formato de la fecha
+    const generateUniqueCode = () => {
+        return uuidv4();
+    };
+    
+    //una vez cumplido el codigo anterior lo que hago hacer esa info para imprimir el ticket utilizando el formato que hicimos en dao
+    const ticket = {
+        code: generateUniqueCode(),
+        purchase_datetime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+        amount: amount,
+        purchase: cart.products
+    };
+    //lo que hago es consologuear el codigo y ver que se este ejecutando, y si podia lo mando a la base de datos
+    console.log('Ticket:', ticket);
+    return res.send({ status: 'success', payload: ticket });
+
+
+    }  catch(error) {
+    console.error(error);
+     return res.send('no se genero el ticket')
+    }
+   
 }

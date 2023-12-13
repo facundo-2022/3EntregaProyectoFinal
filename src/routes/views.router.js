@@ -1,7 +1,7 @@
 import express from "express";
 import passport from "passport";
-import { getProducts} from '../Controllers/productsControllers.js'
-import { createUser,  userSession , /* , userForm */} from '../Controllers/usuariosControllers.js'
+import { createProducts, getProducts} from '../Controllers/productsControllers.js'
+import { createUser,  userSession , updateUser/* , userForm */} from '../Controllers/usuariosControllers.js'
 import path from "path"
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
@@ -16,15 +16,21 @@ router.post('/register', createUser)
 
 router.post('/login', userSession) 
 
-router.get('/products', getProducts)
+router.get('/product', (req, res) =>{
+    res.render("product")
+})
 
-router.get('/', (req, res) => {
-    res.render('0-login.hbs');
+router.post('/restore', updateUser)
+
+router.post('/products', createProducts)
+
+router.get('/login', (req, res) => {
+    res.render('login');
 });
 
 router.get('/register',(req, res) =>{
     //res.send("bienvenido")
-    res.render('register.hbs')
+    res.render('register')
 })
 
 
@@ -40,7 +46,7 @@ router.get('/faillogin', (req, res) => {
 
 router.get('/admin', async (req, res) => {
     try {
-        const viewPath = path.join(__dirname, '../views/licenseadmin.hbs');
+        const viewPath = path.join(__dirname, '../views/licenseadmin');
         const { first_name, email, age } = req.session.user;
         res.render(viewPath, { first_name, email, age });
     } catch (error) {
@@ -73,7 +79,7 @@ router.get('/profile', (req, res) => {
         return res.redirect('/');
     }
     const { first_name, last_name, email, age } = req.session.user;
-    res.render('profile.hbs', { first_name, last_name, email, age });
+    res.render('profile', { first_name, last_name, email, age });
 });
 
 router.get('/session', (req, res) => {

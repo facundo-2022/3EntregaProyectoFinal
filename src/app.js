@@ -15,6 +15,7 @@ import config from './config/config.js';
 import initializePassport from './config/passport.js'
 import passport from 'passport';
 import path from 'path';
+import exphbs from 'express-handlebars';
 
 
 const PRIVATE_KEY = "CoderKey"
@@ -26,12 +27,25 @@ const mongoURL = config.mongoUrl;
 //configuracion de motor de pantillas y las vitas de las rutas a utilizar
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-const hbs = handlebars.create({})
+//const hbs = handlebars.create({})
 
-app.engine("handlebars",  hbs.engine);
+/* app.engine("handlebars",  hbs.engine);
 app.set("views", path.join(__dirname + "views"));
-app.set("view engine", "handlebars");  
+app.set("view engine", "handlebars");   */
 app.use(express.static(path.join(__dirname, 'public'))); 
+
+const hbs = exphbs.create({
+  extname: 'handlebars', // extensión de los archivos de vistas
+  defaultLayout: null, // diseño predeterminado
+  layoutsDir: __dirname + '/views', // carpeta de diseños
+  partialsDir: __dirname + '/views/partials/' // carpeta de parciales
+});
+// Configura Handlebars como el motor de vistas
+app.engine('handlebars', hbs.engine);
+app.set('view engine', 'handlebars');
+
+// Establece la ubicación de las vistas
+app.set('views', path.join(__dirname, 'views'));
 
 //Enlace de conexion con mongoose atlas
 

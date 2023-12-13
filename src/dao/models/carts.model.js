@@ -4,14 +4,14 @@ import mongoosePaginate from 'mongoose-paginate-v2'
 const cartCollection = "carts";
 
 const cartProductSchema = new mongoose.Schema({
-  product: { type: mongoose.Schema.Types.ObjectId, ref: 'productos' },
+  product: { type: String, required: true  },
   quantity: { type: Number, required: true },
 },{ _id: false });
 
 
 const cartSchema = mongoose.Schema({
   products: [cartProductSchema],
-   totla:{type: Number, required: true, default: 0},
+   total:{type: Number, required: true, default: 0},
   },{ versionKey: false });
   ;
 

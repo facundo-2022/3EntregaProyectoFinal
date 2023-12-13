@@ -2,9 +2,9 @@ import ticketModel from "../models/ticket.model.js";
 
 export default class ticket{
   
-  async getAllTickets(req, res) {
+/*   async getAllTickets(req, res) {
     try {
-      const tickets = await ticket.getAllTickets();
+      const tickets = await ticketModel.getAllTickets();
       res.json(tickets);
     } catch (error) {
       res.status(500).json({ error: error.message });
@@ -24,21 +24,21 @@ export default class ticket{
       res.status(500).json({ error: error.message });
     }
   }
-
-  async createTicket(req, res) {
-    
-    const { title, description } = req.body;
-    
+ */
+  async createTicket(code, purchease_datatime, amount, purchease) {
+  
     try {
-      const newTicket = await ticket.createTicket({ title,code, purchase_datetime, amount, purchaser });
-      res.status(201).json(newTicket);
+      const newTicket = await ticketModel.create({ code, purchease_datatime, amount, purchease });
+      return newTicket
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      console.log(error)
+      return null
+     
     }
   }
 
 
-  async deleteTicket(req, res) {
+  /* async deleteTicket(req, res) {
     const { ticketId } = req.params;
 
     try {
@@ -52,8 +52,10 @@ export default class ticket{
       res.status(500).json({ error: error.message });
     }
   }
+
+
+
+
+
+ */
 }
-
-
-
-

@@ -13,7 +13,7 @@ export default class Cart{
 
     getCartById= async(cid) => {
         try {
-            let result = await cartModel.findOne({_id: id}).populate('porducts.product')
+            let result = await cartModel.findOne({_id: cid})
             return result
         } catch (error) {
             console.log(error)
@@ -33,7 +33,8 @@ export default class Cart{
 
     updateCart= async(cid, cart) => {
         try {
-            let result = await cartModel.updateOne({_id: id},{$set : cart})
+            let result = await cartModel.updateOne({_id: cid},{$set : cart})
+            return result
         } catch (error) {
            console.log(error) 
            return null
@@ -68,13 +69,18 @@ export default class Cart{
         }
         //para iterar los producto del carrito utilizamos el for y compara el productId con el ID del producto proporcionado.si coincide retorna al index donde se encuentra dicho producto
         for (let i = 0; i < cart.products.length; i++) {
-            if (cart.products[i].product.toString() === productId) {
+            if (cart.products[i].product === productId) {
+                cart.products[i].quantity ++
+                await cartModel.replaceOne({_id: cartId},cart)
               return i;
             }
-          }
-          // al no encontrar el  producto en el carrito, retornar null
-          return null;
-    }catch(error){
+          } 
+          console.log(productId)
+          cart.products.push({product: productId, quantity: 1})
+          cart.total++ 
+        const newCart =  await cartModel.replaceOne({_id: cartId},cart)
+        return newCart
+        }catch(error){
         console.error('No se pudo ejecutar el codigo ', error);
         return null;
      }   

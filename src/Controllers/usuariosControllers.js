@@ -101,7 +101,7 @@ export const createUser = async(req, res, next) =>{
         if(!user){
             return res.redirect('./register')
         }
-        return res.redirect('/')
+        return res.redirect('/login')
     }) (req, res,next)
     
     
@@ -149,12 +149,12 @@ export const userSession = (req, res, next) =>{
             return res.redirect('/register')
         }
         //si user.email coincide con admin que me envia al hbs de admin para poder modificar o editar lo que el quisiera y de caso contrario que te direccione al hbs de products para poder hacer una comprar como usuario común.
-        if(user.email ===admin){
+        if(user.email === admin){
             req.session.admin =true
             return res.redirect('/licenseadmin')
         }else{
             req.session.admin = false
-            res.redirect('/products')
+            res.redirect('/product')
         }
         
 
