@@ -23,7 +23,7 @@ export const getCart = async(req, res) => {
 export const getCartById = async(req, res) => {
     try{
         const {cid} = req.params
-        let cart = await userService.getCartById(uid)
+        let cart = await cartService.getCartById(cid)
         if(!cart){
             res.send({status:'error', error:'carrito no encontrado'})
         }
@@ -160,7 +160,7 @@ export const deleteproductontheCart = async (req, res)=> {
     }
 
 }
-export const purchease = async (req, res)=> {
+/* export const purchase = async (req, res)=> {
    try {
     const cartId = req.params.cid
     const cart = await cartService.getCartById(cartId)
@@ -168,39 +168,50 @@ export const purchease = async (req, res)=> {
       return  res.send({status: 'error', error: 'Carrito no encontrado'})
     }
     
-    let amount = 0;
+   let amount = 0 ;
     for (let i = 0; i < cart.products.length; i++) {
-        const product = await productService.getProductsById(cart.products[i].product)
-        if(product.stock > cart.products[i].quantity ){
-            cart.products.splice(i,1)
-            cart.total--
-            product.stock -= cart.products[i].quantity
-            await productService.updateProduct(product.id, { stock: product.stock });
-
-            const totalProduct = product.price * cart.products[i].quantity;
-            amount += totalProduct;
-
-
-            console.log(`Producto: ${product.title}, Cantidad: ${cart.products[i].quantity}, Subtotal: ${totalProduct}`);
-        } 
+        const product = await productService.getProductsById(cart.products[i].product);
         
-    }
+        if (product.stock > cart.products[i].quantity) {
+            cart.products.splice(i, 1);
+            cart.total--;
+            product.stock--;
+         //  await productService.addProduct(product.id, { stock: product.stock }); 
 
+           
+             const totalProduct = product.price * cart.products[i].quantity;
+            amount += totalProduct  
+            
+          
+             console.log(`Producto: ${product.title}, Cantidad: ${cart.products[i].quantity}, Subtotal: ${totalProduct}`);
+ 
+        
+        }
+       
+   
+    }
+    
+    //console.log('total de la compra', totalAmount)
+    
+   
     ///para generar el unico code utilice un formate que  saque de internet el uuid para generar un unico codigo universal. tuve que instalar el uuid y el date-fns para el formato de la fecha
-    const generateUniqueCode = () => {
+      const generateUniqueCode = () => {
         return uuidv4();
     };
-    
+     
     //una vez cumplido el codigo anterior lo que hago hacer esa info para imprimir el ticket utilizando el formato que hicimos en dao
     const ticket = {
         code: generateUniqueCode(),
         purchase_datetime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-        amount: amount,
+        amount:amount,
         purchase: cart.products
-    };
+    }; 
+ 
     //lo que hago es consologuear el codigo y ver que se este ejecutando, y si podia lo mando a la base de datos
     console.log('Ticket:', ticket);
-    return res.send({ status: 'success', payload: ticket });
+   return res.send({ status: 'success', payload: ticket });
+ 
+   
 
 
     }  catch(error) {
@@ -208,4 +219,90 @@ export const purchease = async (req, res)=> {
      return res.send('no se genero el ticket')
     }
    
-}
+} */
+
+export const purchase = async (req, res) => {
+    try {
+        const cartId = req.params.cid;
+        const cart = await cartService.getCartById(cartId);
+        if (!cart) {
+            return res.send({ status: 'error', error: 'Carrito no encontrado' });
+        }
+
+        let amount = 0;
+        const updatedProducts = [];
+
+        for (const cartProduct of cart.products) {
+            const product = await productService.getProductsById(cartProduct.product);
+
+            if (product.stock > cartProduct.quantity) {
+                const totalProduct = product.price * cartProduct.quantity;
+                amount += totalProduct;
+
+                console.log(`Producto: ${product.title}, Cantidad: ${cartProduct.quantity}, Subtotal: ${totalProduct}`);
+
+                // Añadir el producto actualizado al nuevo array
+                updatedProducts.push({
+                    product: cartProduct.product,
+                    quantity: cartProduct.quantity
+                });
+
+                // Actualizar el stock del producto
+                product.stock--;
+
+               //actualizo los datos del stock en mi base de datos
+                 await productService.addProduct(product.id, { stock: product.stock });
+            }
+        }
+
+        // Actualizar el array de productos en el carrito
+        cart.products = updatedProducts;
+        cart.total = updatedProducts.length;
+
+        
+
+        const generateUniqueCode = () => {
+            return uuidv4();
+        };
+
+        const ticket = {
+            code: generateUniqueCode(),
+            purchase_datetime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
+            amount: amount,
+            purchase: cart.products
+        };
+        // Guardar el ticket en la base de datos
+        const savedTicket = await ticketService.saveTicket(ticket);
+
+        console.log('Ticket guardado en la base de datos:', savedTicket);
+        return res.send({ status: 'success', payload: savedTicket });
+        /* console.log('Ticket:', ticket);
+        return res.send({ status: 'success', payload: ticket }); */
+    } catch (error) {
+        console.error(error);
+        return res.send('no se generó el ticket');
+    }
+};
+
+//buscar ticket por su id
+
+// ticketController.js
+
+
+
+export const getTicketById = async (req, res) => {
+    try {
+        const {tid} = req.params.id;
+
+        const ticket = await ticketService.getTicketById(tid);
+
+        if (!ticket) {
+            return res.status(404).send({ status: 'error', error: 'Ticket no encontrado' });
+        }
+
+        res.send({ status: 'success', payload: ticket });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Error interno del servidor');
+    }
+};
