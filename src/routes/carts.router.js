@@ -1,4 +1,5 @@
-import { getCart, getCartById, createCart, updateCart, deleteCart, deleteproductontheCart, purchase, getTicketById } from "../Controllers/cartsControllers.js";
+import { getCart, getCartById, createCart, updateCart, deleteCart, deleteProductFromCart,  } from "../Controllers/cartsControllers.js";
+import {getAllTickets, purchase, getTicketById} from '../Controllers/ticket.controllers.js'
 import { Router} from 'express'
 import { get } from "mongoose";
 
@@ -11,7 +12,7 @@ router.post("/", createCart)
 router.put("/:cid/:pid", updateCart)
 router.post("/:cid/purchase", purchase )
 router.delete("/", deleteCart)
-router.delete('/:cid/producto/:pid', deleteproductontheCart)
-router.get("/:tid", getTicketById)
+router.delete('/:cid/producto/:pid', deleteProductFromCart)
+router.get("/ticket/:tid", getTicketById)
 
 export default router

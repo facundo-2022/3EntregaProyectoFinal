@@ -61,7 +61,7 @@ export default class Cart{
     }
 
     
-    linkproductincart = async (cartId, productId) =>{
+    linkProductInCart = async (cartId, productId) =>{
      try{
         const cart = await cartModel.findOne({_id: cartId})
         if(!cart){

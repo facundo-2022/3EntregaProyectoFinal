@@ -36,7 +36,37 @@ export const createProducts = async(req, res) => {
         
 }
 }
-export const addProduct = async(req, res) => {
+
+export const updateProduct = async (req, res) => {
+    try {
+        const { pid } = req.params;
+        const updatedProduct = req.body;
+
+        // Verifica si se proporcionaron datos para actualizar
+        if (Object.keys(updatedProduct).length === 0) {
+            return res.status(400).json({ status: 'error', error: 'Completa los datos para actualizar el producto.' });
+        }
+
+        // Lógica de actualización: establece el estado basándote en el stock
+        updatedProduct.status = updatedProduct.stock !== "0";
+
+        // Llama a la función de tu servicio diseñada para actualizar un producto
+        const result = await productService.updateProduct(pid, updatedProduct);
+
+        // Verifica si el producto se encontró y se actualizó correctamente
+        if (!result) {
+            return res.status(404).json({ status: "error", error: "No se encontró el producto." });
+        }
+
+        // Envía una respuesta de éxito con los datos actualizados
+        res.json({ status: "success", message: "Producto actualizado correctamente.", updatedProduct: result });
+    } catch (error) {
+        console.error(`Error al actualizar el producto: ${error}`);
+        res.status(500).json({ status: "error", error: 'Error al actualizar el producto.' });
+    }
+}
+
+/* export const addProduct = async(req, res) => {
     try{
         let {pid} = req.params
         const updateproduct = req.body
@@ -59,7 +89,7 @@ export const addProduct = async(req, res) => {
         res.send({ status: "error", error: 'Error no se pudo actualizar el producto.' });
     }
 
-}
+} */
 
 export const getProducts = async(req, res) => {
     let result = await productService.getProducts()

@@ -2,7 +2,7 @@ import ticketModel from "../models/ticket.model.js";
 
 export default class ticket{
   
-   async getAllTickets() {
+    getAllTickets = async() => {
     try {
       const tickets = await ticketModel.getAllTickets();
       res.json(tickets);
@@ -11,10 +11,10 @@ export default class ticket{
     }
   }
 
-  async getTicketById(tid) {
+   getTicketById = async(tid) => {
    
     try {
-      let result = await ticketModel.getTicketById({_id: tid});
+     const result = await ticketModel.findOne({_id: tid});
       return result;
     } catch (error) {
       console.log(error)
@@ -22,7 +22,7 @@ export default class ticket{
     }
   }
  
-  async createTicket(code, purchase_datatime, amount, purchase) {
+  createTicket = async(code, purchase_datatime, amount, purchase) =>  {
   
     try {
       const newTicket = await ticketModel.create({ code, purchase_datatime, amount, purchase });
@@ -34,7 +34,7 @@ export default class ticket{
     }
   }
 
-  async saveTicket (ticket) {
+  saveTicket= async() => {
     try {
         // Crea una nueva instancia de tu modelo de ticket
         const newTicket = new ticketModel({
@@ -53,24 +53,15 @@ export default class ticket{
         return null 
     }
 };
-  /* async deleteTicket(req, res) {
+   deleteTicket = async(tid) => {
     const { ticketId } = req.params;
 
     try {
-      const deletedTicket = await ticket.deleteTicket(ticketId);
-      if (deletedTicket) {
-        res.json({ message: 'Ticket eliminado correctamente' });
-      } else {
-        res.status(404).json({ message: 'Ticket no existe' });
-      }
-    } catch (error) {
-      res.status(500).json({ error: error.message });
-    }
-  }
-
-
-
-
-
- */
+      const result = await ticketModel.deleteOne({ _id: tid })
+      return result
+      }catch (error) {
+      console.log(error)
+            return null
+          }
+}
 }

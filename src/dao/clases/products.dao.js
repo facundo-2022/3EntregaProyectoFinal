@@ -28,7 +28,7 @@ export default class Product {
             return null
         }
     }
-    addProduct = async(id, product) =>{
+    updateProduct = async(id, product) =>{
         try {
             let result = await productModel.updateOne({_id: id},{$set:product})
             return result

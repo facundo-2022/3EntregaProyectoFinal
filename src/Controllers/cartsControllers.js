@@ -3,13 +3,10 @@
 import { configDotenv } from 'dotenv'
 import Cart from '../dao/clases/carts.dao.js'
 import Product from '../dao/clases/products.dao.js'
-import Ticket from '../dao/clases/ticket.dao.js'
-import { v4 as uuidv4 } from 'uuid';
-import { format } from 'date-fns';
+
 
 const cartService = new Cart()
 const productService = new Product()
-const ticketService = new Ticket()
 export const getCart = async(req, res) => {
     try{
         let cart = await cartService.getCart()
@@ -115,51 +112,63 @@ export const deleteCart = async(req,res) => {
 }
 
 
-
-
-export const deleteproductontheCart = async (req, res)=> {
+export const deleteProductFromCart = async (req, res) => {
     try {
-        const cid = req.params.cid;
+        const cartId = req.params.cid;
         const pid = req.params.pid;
         const quantity = parseInt(req.body.quantity);
+
+        // Validación de cantidad
         if (quantity <= 0) {
-            return res.status(400).json({ error: 'La cantidad de los producto debe ser mayor que 0.' });
+            return res.status(400).json({ error: 'La cantidad del producto debe ser mayor que 0.' });
         }
-        const cart = await cartService.getCartById(cid);
+
+        // Obtener el carrito por ID
+        const cart = await cartService.getCartById(cartId);
         if (!cart) {
-            return res.status(404).json({ error: 'No se detecta ningun carrito.' });
+            return res.status(404).json({ error: 'No se encuentra ningún carrito.' });
         }
-        const product = await productService.getProductById(pid);
+
+        // Obtener el producto por ID
+        const product = await productService.getProductsById(pid);
         if (!product) {
             return res.status(404).json({ error: 'No se encuentra el producto.' });
         }
-        const productIndex = await cartService.linkproductincart(cid, pid);
+
+        // Obtener el índice del producto en el carrito
+        const productIndex = await cartService.linkProductInCart(cartId, pid);
         if (productIndex === -1) {
-            return res.status(404).json({ error: 'No existe ningun producto agregado al carrito' });
+            return res.status(404).json({ error: 'No existe ningún producto agregado al carrito.' });
         }
+
+        // Verificar que la cantidad a eliminar no sea mayor que la cantidad en el carrito
         const productInTheCart = cart.products[productIndex];
         if (productInTheCart.quantity < quantity) {
             return res.status(400).json({ error: 'La cantidad a eliminar es mayor que la cantidad en el carrito.' });
         }
-        
+
+        // Actualizar la cantidad, el stock y el total del carrito
         productInTheCart.quantity -= quantity;
-       
         product.stock += quantity;
         const productTotal = product.price * quantity;
         cart.total -= productTotal;
-        if (productInTheCart.quantity === 0) {
+
         // Si la cantidad llega a 0, eliminar el producto del carrito
+        if (productInTheCart.quantity === 0) {
             cart.products.splice(productIndex, 1);
         }
+
+        // Actualizar la información en la base de datos
         await productService.updateProduct(pid, product);
-        await cartService.updateCart(cid, cart);
+        await cartService.updateCart(cartId, cart);
 
         res.json({ message: 'Producto eliminado del carrito correctamente.' });
     } catch (error) {
+        console.error(error);
         res.status(500).json({ error: 'Error al eliminar el producto del carrito.' });
     }
+};
 
-}
 /* export const purchase = async (req, res)=> {
    try {
     const cartId = req.params.cid
@@ -221,88 +230,3 @@ export const deleteproductontheCart = async (req, res)=> {
    
 } */
 
-export const purchase = async (req, res) => {
-    try {
-        const cartId = req.params.cid;
-        const cart = await cartService.getCartById(cartId);
-        if (!cart) {
-            return res.send({ status: 'error', error: 'Carrito no encontrado' });
-        }
-
-        let amount = 0;
-        const updatedProducts = [];
-
-        for (const cartProduct of cart.products) {
-            const product = await productService.getProductsById(cartProduct.product);
-
-            if (product.stock > cartProduct.quantity) {
-                const totalProduct = product.price * cartProduct.quantity;
-                amount += totalProduct;
-
-                console.log(`Producto: ${product.title}, Cantidad: ${cartProduct.quantity}, Subtotal: ${totalProduct}`);
-
-                // Añadir el producto actualizado al nuevo array
-                updatedProducts.push({
-                    product: cartProduct.product,
-                    quantity: cartProduct.quantity
-                });
-
-                // Actualizar el stock del producto
-                product.stock--;
-
-               //actualizo los datos del stock en mi base de datos
-                 await productService.addProduct(product.id, { stock: product.stock });
-            }
-        }
-
-        // Actualizar el array de productos en el carrito
-        cart.products = updatedProducts;
-        cart.total = updatedProducts.length;
-
-        
-
-        const generateUniqueCode = () => {
-            return uuidv4();
-        };
-
-        const ticket = {
-            code: generateUniqueCode(),
-            purchase_datetime: format(new Date(), 'yyyy-MM-dd HH:mm:ss'),
-            amount: amount,
-            purchase: cart.products
-        };
-        // Guardar el ticket en la base de datos
-        const savedTicket = await ticketService.saveTicket(ticket);
-
-        console.log('Ticket guardado en la base de datos:', savedTicket);
-        return res.send({ status: 'success', payload: savedTicket });
-        /* console.log('Ticket:', ticket);
-        return res.send({ status: 'success', payload: ticket }); */
-    } catch (error) {
-        console.error(error);
-        return res.send('no se generó el ticket');
-    }
-};
-
-//buscar ticket por su id
-
-// ticketController.js
-
-
-
-export const getTicketById = async (req, res) => {
-    try {
-        const {tid} = req.params.id;
-
-        const ticket = await ticketService.getTicketById(tid);
-
-        if (!ticket) {
-            return res.status(404).send({ status: 'error', error: 'Ticket no encontrado' });
-        }
-
-        res.send({ status: 'success', payload: ticket });
-    } catch (error) {
-        console.error(error);
-        res.status(500).send('Error interno del servidor');
-    }
-};
