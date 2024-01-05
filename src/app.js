@@ -16,6 +16,8 @@ import initializePassport from './config/passport.js'
 import passport from 'passport';
 import path from 'path';
 import exphbs from 'express-handlebars';
+import logMessage from './test/logger.js';
+import logLevels from './test/loglevels.js';
 
 
 const PRIVATE_KEY = "CoderKey"
@@ -95,7 +97,22 @@ app.use("/products", productRouter);
 app.use("/carts", cartRouter);
 app.use('/',viewsRouter)
 
+// Endpoint para probar logs
+app.get('/loggerTest', (req, res) => {
+  logMessage("Este es un mensaje de depuración", logLevels.DEBUG);
+  logMessage("Este es un mensaje de advertencia", logLevels.WARNING);
+  logMessage("Este es un mensaje de error", logLevels.ERROR);
+  logMessage("Este es un mensaje informativo", logLevels.INFO);
+  logMessage("Este es un mensaje fatal", logLevels.FATAL);
 
+  res.send('Logs enviados. Verifica la consola y el archivo de errores.');
+});
+
+// Manejador de errores
+app.use((err, req, res, next) => {
+  logMessage(`Error: ${err.message}`, logLevels.ERROR);
+  res.status(500).send('¡Algo salió mal!');
+});
 
 /* const transporter = nodemailer.createTransport({
   service:"Gmail",

@@ -51,7 +51,7 @@ export default class Cart{
         }
     }
 
-    deltecart= async(cid)=>{
+    deleteCart= async(cid)=>{
         try {
             let result = await cartModel.deleteOne({_id: cid})
         } catch (error) {

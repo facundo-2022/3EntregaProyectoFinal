@@ -85,17 +85,18 @@ export const updateCart = async(req, res) => {
     }
 }
 
-export const deleteCart = async(req,res) => {
-    try{
-        const cid =req.params.cid
-        const removeCart = await productService.getProductsById({ _id: cid})
-        
-        if(!removeCart){
-            return res.send(404).json({status:"error", error:'no se encuentra el carrito'})
+export const deleteCart = async (req, res) => {
+    try {
+        const cid = req.params.cid;
+        const removeCart = await cartService.getCartById({ _id: cid });
+
+        if (!removeCart) {
+            return res.status(404).json({ status: "error", error: 'No se encuentra el carrito' });
         }
-        //el lo lo utilizamos para por tener los producto que habiamos comprado supuestamente en el carrito vuelvan al stock de cada producto
-        for (const productincart of removeCart.products) {
-            const product = await productService.getProductById(productInTheCart.product);
+
+        // Utilizamos un bucle para devolver los productos del carrito al stock
+        for (const productInTheCart of removeCart.products) {
+            const product = await productService.getProductsById(productInTheCart.product);
             const quantity = productInTheCart.quantity;
 
             await productService.updateProduct(
@@ -104,13 +105,13 @@ export const deleteCart = async(req,res) => {
             );
         }
 
-    await cartService.deleteCart({ _id: cid });
+        await cartService.deleteCart({ _id: cid });
         return res.json({ message: 'Carrito eliminado y stock normalizado.' });
     } catch (error) {
+        console.error(error);
         return res.status(500).json({ message: 'Error al eliminar el carrito.' });
     }
-}
-
+};
 
 export const deleteProductFromCart = async (req, res) => {
     try {

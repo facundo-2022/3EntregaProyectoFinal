@@ -11,7 +11,7 @@ router.get("/:cid", getCartById)
 router.post("/", createCart)
 router.put("/:cid/:pid", updateCart)
 router.post("/:cid/purchase", purchase )
-router.delete("/", deleteCart)
+router.delete("/:cid", deleteCart)
 router.delete('/:cid/producto/:pid', deleteProductFromCart)
 router.get("/ticket/:tid", getTicketById)
 
