@@ -1,79 +1,126 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Página de Productos</title>
+    <!-- Agrega los enlaces a los estilos de Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
 <body>
-      
-    <h1>Ingresar Carrito</h1>
 
-    <form  method="post" action="/product>
-      
-        <input type="text" name="productId" id="productId" required> 
+<div class="container mt-5">
+    <h1 class="mb-4">Productos Disponibles</h1>
 
-      <label for="productTitle">Nombre de Producto</label>
-      <input type="text" name="title" id="title" required />
-      <label for="productDescription">Descripción de Producto</label>
-      <input type="text" name="description" id="description" required />
-      <label for="productCode"> Código de Producto</label>
-      <input type="text" name="code" id="code" required />
-      <label for="productPrice">Precio Producto</label>
-      <input type="number" name="price" id="price" required />
-      <label for="productStock">Stock Producto</label>
-      <input type="number" name="stock" id="stock" required />
-      <label for="productCategory">Categoría del Producto </label>
-      <input type="text" name="category" id="category" required />
-      
-      <button type="submit">Agregar producto</button>
+    <div id="productos-container"></div>
 
-    </form>
-
-    
-<form class="row g-3" method="post" action="/products/product">
-  <div class="col-md-4">
-    <label for="productId" class="form-label">ID Producto</label>
-    <input  type="text" name="productId" id="productId" required class="form-control"  value="Mark" required>
-  </div>
-  <div class="col-md-4">
-    <label for="validationDefault02" class="form-label">Last name</label>
-    <input type="text" class="form-control" id="validationDefault02" value="Otto" required>
-  </div>
-  <div class="col-md-4">
-    <label for="validationDefaultUsername" class="form-label">Username</label>
-    <div class="input-group">
-      <span class="input-group-text" id="inputGroupPrepend2">@</span>
-      <input type="text" class="form-control" id="validationDefaultUsername" aria-describedby="inputGroupPrepend2" required>
+    <!-- Agrega el modal de carrito -->
+    <div class="modal fade" id="carritoModal" tabindex="-1" role="dialog" aria-labelledby="carritoModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="carritoModalLabel">Carrito de Compras</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div id="carrito-container"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  <div class="col-md-6">
-    <label for="validationDefault03" class="form-label">City</label>
-    <input type="text" class="form-control" id="validationDefault03" required>
-  </div>
-  <div class="col-md-3">
-    <label for="validationDefault04" class="form-label">State</label>
-    <select class="form-select" id="validationDefault04" required>
-      <option selected disabled value="">Choose...</option>
-      <option>...</option>
-    </select>
-  </div>
-  <div class="col-md-3">
-    <label for="validationDefault05" class="form-label">Zip</label>
-    <input type="text" class="form-control" id="validationDefault05" required>
-  </div>
-  <div class="col-12">
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" value="" id="invalidCheck2" required>
-      <label class="form-check-label" for="invalidCheck2">
-        Agree to terms and conditions
-      </label>
+    <!-- Fin del modal de carrito -->
+
+</div>
+
+<!-- Agrega los scripts de Bootstrap y Handlebars -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/handlebars@4.7.7/dist/handlebars.min.js"></script>
+
+<script id="producto-template" type="text/x-handlebars-template">
+    <div class="card mb-3">
+        <img src="{{imagen}}" class="card-img-top" alt="{{title}}">
+        <div class="card-body">
+            <h5 class="card-title">{{title}}</h5>
+            <p class="card-text">Stock: {{stock}}</p>
+            <p class="card-text">Cantidad disponible: {{quantity}}</p>
+            <input type="number" class="form-control mb-2" min="0" max="{{quantity}}" value="0" data-producto="{{@index}}">
+            <button class="btn btn-primary" onclick="agregarAlCarrito({{@index}})">Agregar al Carrito</button>
+        </div>
     </div>
-  </div>
-  <div class="col-12">
-    <button class="btn btn-primary" type="submit">Agregar producto</button>
-  </div>
-</form>
+</script>
+
+<script id="carrito-template" type="text/x-handlebars-template">
+    <div class="mb-2">
+        <p><strong>{{title}}</strong></p>
+        <p>Cantidad: {{quantity}}</p>
+        <button class="btn btn-danger" onclick="eliminarDelCarrito({{@index}})">Eliminar</button>
+    </div>
+</script>
+
+<script>
+    let productos = [
+        { nombre: 'Producto 1', imagen: 'imagen1.jpg', stock: 10, cantidad: 5 },
+        { nombre: 'Producto 2', imagen: 'imagen2.jpg', stock: 20, cantidad: 8 },
+        // ... otros productos
+    ];
+
+    let carrito = [];
+
+    let productoTemplate = Handlebars.compile(document.getElementById('producto-template').innerHTML);
+    let carritoTemplate = Handlebars.compile(document.getElementById('carrito-template').innerHTML);
+
+    document.getElementById('productos-container').innerHTML = productos.map(productoTemplate).join('');
+
+    function agregarAlCarrito(index) {
+        let cantidadSeleccionada = parseInt(document.querySelector(`input[data-producto="${index}"]`).value, 10);
+        if (cantidadSeleccionada > 0) {
+            let producto = { ...productos[index], cantidad: cantidadSeleccionada };
+            carrito.push(producto);
+            actualizarCarrito();
+        }
+    }
+
+    function eliminarDelCarrito(index) {
+        carrito.splice(index, 1);
+        actualizarCarrito();
+    }
+
+    function actualizarCarrito() {
+        let carritoContainer = document.getElementById('carrito-container');
+        carritoContainer.innerHTML = carritoTemplate({ carrito });
+        // Puedes actualizar otras partes de tu interfaz aquí
+    }
+</script>
+
+<!-- Agrega el script para manejar la comunicación con el servidor -->
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+  // Función para cargar los productos desde el servidor
+  async function cargarProductos() {
+    try {
+      const response = await axios.get('/productos');
+      const productos = response.data;
+
+      var productosContainer = document.getElementById('productos-container');
+      productosContainer.innerHTML = productos.map(productoTemplate).join('');
+    } catch (error) {
+      console.error('Error al cargar los productos:', error);
+    }
+  }
+
+  // Llama a la función para cargar los productos al cargar la página
+  window.onload = cargarProductos;
+</script>
+
+
+
 </body>
 </html>
